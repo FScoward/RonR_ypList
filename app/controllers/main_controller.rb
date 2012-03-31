@@ -1,0 +1,145 @@
+# coding: utf-8
+require 'open-uri'
+require 'DistributorInfo'
+class MainController < ApplicationController
+	def index
+		# ip addressの取得
+		@ip_addr = request.remote_ip
+
+=begin
+index.txtから情報を取得
+		表示項目：	再生ボタン
+								掲示板URL
+								チャンネル名
+=end
+
+		sp = "http://bayonet.ddo.jp/sp/index.txt"
+
+		info_arr = Array.new
+		open(sp){|txt|
+  		while data = txt.gets
+		    # １配信分(１行)の情報
+    	  info_arr.push(data)
+  		end
+		}
+
+		# DistributorInfo を格納する配列
+		arr_DI = Array.new
+
+		# １配信（１行）取得
+		info_arr.each{|i|
+			# <> で分割して配列に格納
+			splitInfo = i.split("<>")
+			di = DistributorInfo.new
+			di.peer_name = splitInfo[0]
+			di.url_peer = splitInfo[1]
+			di.url_direct = splitInfo[2]
+			di.board = splitInfo[3]
+			di.genre = splitInfo[4]
+			di.comment = splitInfo[5]
+			di.status1 = splitInfo[6]
+			di.status2 = splitInfo[7]
+			di.kbps = splitInfo[8]
+			di.peertype = splitInfo[9]
+			di.unknown = splitInfo[10]
+			di.time = splitInfo[11]
+			di.click = splitInfo[12]
+			di.comment2 = splitInfo[13]
+			di.num = splitInfo[14]
+
+			arr_DI.push(di)
+		}
+
+
+		#create(arr_DI)
+		update(arr_DI)
+
+		
+		#@info = info_arr
+		@info = arr_DI
+
+		# 表示
+		render :action => 'index'
+  end
+
+	def fromDatabase
+		@database = Peerlist.find(params[:id])
+		
+	end
+
+	
+	def search
+		render :text => 'hello'
+	end
+
+	# --- データベース関連 ---
+	def new
+	  peerlist = Peerlist.new
+	end
+
+	# データベースへデータ登録
+	def create(arr_data)
+		# ハッシュで渡せば良い
+		#peerlist = Peerlist.new
+		arr_data.each{|a|
+			peerlist = Peerlist.new(a.toHash)
+			peerlist.save
+		}
+
+	end
+
+	# データベース更新
+	def update(_arr_data)
+		peerlist = Peerlist.all
+		# destroyするためのidを保持しておくための配列
+		idNum = Array.new
+
+		peerlist.each{|p|
+			_arr_data.each{|a|
+		  	flag = false
+				if(p.peer_name == a.peer_name)
+				  # 一致するものがあれば更新
+					p.update_attributes(a.toHash)
+					flag = true
+				else
+					# 一致するものがなければDBから削除
+					idNum.push(p.id)
+					p.destroy	
+					flag = true
+				end
+
+				# DBに存在せず、新規にデータが入ってきた場合
+				if(flag == false)
+					peerlist.new(a.toHash)
+					peerlist.save
+				end
+			}
+		
+
+		}
+
+		destroy(idNum)
+=begin
+			if(peerlist = Peerlist.find(a.peer_name))
+				if()
+				# チャンネル名が既にDB上に存在するが、新規データとして入ってこない場合、DBから削除
+				else
+				# 既にチャンネル名がDB上に存在する場合、更新を行う
+					peerlist.update_attributes(a.toHash)
+				end
+
+			else
+				# チャンネル名DB上に存在しない場合
+			end
+		}
+
+=end
+	end
+
+	def destroy(_idNums)
+		_idNums.each{|id|
+			peerlist = Peerlist.find(_id)
+			peerlist.destroy
+		}
+	end
+end

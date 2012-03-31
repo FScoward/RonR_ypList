@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  url_peer: MyString
+  url_direct: MyString
+  board: MyString
+  genre: MyString
+  comment: MyString
+  status1: 1
+  status2: 1
+  kbps: 1
+  peertype: MyString
+  unknown: MyString
+  time: MyString
+  click: MyString
+  comment2: MyString
+  num: 1
+
+two:
+  name: MyString
+  url_peer: MyString
+  url_direct: MyString
+  board: MyString
+  genre: MyString
+  comment: MyString
+  status1: 1
+  status2: 1
+  kbps: 1
+  peertype: MyString
+  unknown: MyString
+  time: MyString
+  click: MyString
+  comment2: MyString
+  num: 1

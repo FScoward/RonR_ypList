@@ -1,0 +1,26 @@
+ip address
+<%= @ip_addr %><br/>
+
+<hr>
+
+<table border="1" class="peercast">
+				<tr>
+								<th>名前</th>
+								<th>url</th>
+								<th>掲示板</th>
+								<th>ジャンル</th>
+								<th>コメント</th>
+								<th>kbps</th>
+				</tr>
+<% @info.each do |a_info| %>
+				<tr style="background-color:<%= cycle('#ffffff', '#FFff99', '#7fffd4') %>">
+								<td><%= a_info.name %></td>
+								<td><%= link_to("視聴URL", "http://localhost:7144/pls/" + a_info.url_peer + "?tip=" + a_info.url_direct) %></td>
+								<td><%= link_to("掲示板", a_info.board) %></td>
+								<td><%= a_info.genre %></td>
+								<td><%= CGI.unescapeHTML(a_info.comment) %></td>
+								<td><%= a_info.kbps + "kbps" %></td>
+				</tr>
+<% end %>
+</table>
+

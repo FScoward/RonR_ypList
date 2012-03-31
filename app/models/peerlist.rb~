@@ -1,0 +1,3 @@
+class Peerlist < ActiveRecord::Base
+	self.primary_key = "peer_name"
+end
